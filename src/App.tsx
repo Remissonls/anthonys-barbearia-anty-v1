@@ -76,7 +76,7 @@ export function App() {
   // ROUTE 1: PUBLIC BOOKING PAGE (/agendar/:slug)
   // ----------------------------------------------------
   if (currentPath.startsWith('/agendar/')) {
-    const slug = currentPath.replace('/agendar/', '').split('/')[0] || 'mestre-navalha';
+    const slug = currentPath.replace('/agendar/', '').split('/')[0] || 'anthonys-barbearia';
     return (
       <div className="relative min-h-screen bg-[#0B0D0F]">
         {/* Floating switch back to admin for demo convenience */}

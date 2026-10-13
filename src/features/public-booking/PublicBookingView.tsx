@@ -21,6 +21,8 @@ import {
   toISODateString,
   DAYS_OF_WEEK_SHORT,
 } from '../../utils/date';
+import { AnthonysLogo } from '../../components/brand/AnthonysLogo';
+import { ServiceIcon } from '../../components/brand/ServiceIcons';
 import {
   Scissors,
   User,
@@ -40,6 +42,8 @@ import {
   CalendarPlus,
   ShieldCheck,
   ArrowRight,
+  Shield,
+  Crown,
 } from 'lucide-react';
 
 interface PublicBookingViewProps {
@@ -54,7 +58,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
   const [shopError, setShopError] = useState<string | null>(null);
 
   // Modern Fluid Steps:
-  // 1: Serviço | 2: Barbeiro | 3: Data & Horário (unificados!) | 4: Dados & Confirmar | 5: Voucher Sucesso
+  // 1: Tabela de Preços/Serviço | 2: Barbeiro | 3: Data & Horário | 4: Dados & Confirmar | 5: Voucher Sucesso
   const [step, setStep] = useState<number>(1);
 
   // User selections
@@ -123,7 +127,6 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
           selectedDate
         );
         setAvailableSlots(slots);
-        // Clear slot if it's no longer available on this date
         if (selectedSlot && !slots.some((s) => s.time === selectedSlot.time)) {
           setSelectedSlot(null);
         }
@@ -187,7 +190,6 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
   // Slot selection with instant feedback and smooth advance
   const handleSelectSlot = (slot: AvailabilitySlot) => {
     setSelectedSlot(slot);
-    // Smooth micro-delay so the user perceives the tactile selection before advancing
     setTimeout(() => {
       setStep(4);
     }, 180);
@@ -213,7 +215,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
       if (!result.success) {
         setSubmissionError(result.message || 'Falha ao concluir agendamento.');
         if (result.code === 'SLOT_CONFLICT') {
-          setStep(3); // return to date/time view
+          setStep(3);
           setSelectedSlot(null);
         }
         setIsSubmitting(false);
@@ -221,7 +223,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
       }
 
       setBookingResult(result.appointment || null);
-      setStep(5); // Success confirmation step
+      setStep(5);
     } catch (err: any) {
       setSubmissionError(err.message || 'Erro inesperado ao registrar o agendamento.');
     } finally {
@@ -236,7 +238,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
     setTimeout(() => setCopiedCode(false), 2500);
   };
 
-  // WhatsApp click handler for booking confirmation
+  // WhatsApp click handler
   const handleSendToWhatsApp = () => {
     if (!shop || !bookingResult) return;
     const phone = shop.whatsapp || shop.phone;
@@ -244,7 +246,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
     const dateFormatted = formatDateBR(bookingResult.starts_at);
     const timeFormatted = formatTimeBR(bookingResult.starts_at);
     const text = encodeURIComponent(
-      `Olá! Acabei de agendar um horário pelo AgendaPro:\n` +
+      `Olá! Acabei de agendar na *Anthony's Barbearia*:\n` +
       `✂️ *Serviço:* ${bookingResult.service_name_snapshot}\n` +
       `📅 *Data:* ${dateFormatted} às ${timeFormatted}\n` +
       `🔑 *Código:* ${bookingResult.public_code}\n` +
@@ -258,34 +260,30 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
     if (!bookingResult) return '#';
     const start = new Date(bookingResult.starts_at).toISOString().replace(/-|:|\.\d\d\d/g, '');
     const end = new Date(bookingResult.ends_at).toISOString().replace(/-|:|\.\d\d\d/g, '');
-    const title = encodeURIComponent(`Corte na ${shop?.name || 'Barbearia'} (${bookingResult.service_name_snapshot})`);
+    const title = encodeURIComponent(`Anthony's Barbearia - ${bookingResult.service_name_snapshot}`);
     const details = encodeURIComponent(
-      `Agendamento confirmado no AgendaPro.\nCódigo: ${bookingResult.public_code}\nBarbeiro: ${bookingResult.barber_name_snapshot || 'Profissional'}`
+      `Agendamento confirmado na Anthony's Barbearia.\nCódigo: ${bookingResult.public_code}\nBarbeiro: ${bookingResult.barber_name_snapshot || 'Equipe Anthony\'s'}\nEstilo • Respeito • Autoestima`
     );
-    const location = encodeURIComponent(shop?.address || shop?.name || '');
+    const location = encodeURIComponent(shop?.address || "Anthony's Barbearia");
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
   };
 
-  // Loading skeleton
   if (isLoadingShop) {
     return (
       <div className="min-h-screen bg-[#090A0C] text-[#F3F1EC] p-4 flex flex-col items-center justify-center">
         <div className="w-full max-w-md space-y-4">
-          <div className="flex items-center gap-3">
-            <Skeleton className="w-12 h-12 rounded-full" />
-            <div className="space-y-2 flex-1">
-              <Skeleton className="w-3/4 h-5" />
-              <Skeleton className="w-1/2 h-3" />
-            </div>
+          <div className="flex flex-col items-center gap-2">
+            <Skeleton className="w-14 h-14 rounded-full" />
+            <Skeleton className="w-48 h-6" />
+            <Skeleton className="w-32 h-3" />
           </div>
-          <Skeleton className="w-full h-12 rounded-xl" />
-          <Skeleton className="w-full h-48 rounded-2xl" />
+          <Skeleton className="w-full h-10 rounded-full" />
+          <Skeleton className="w-full h-64 rounded-2xl" />
         </div>
       </div>
     );
   }
 
-  // Error screen
   if (shopError || !shop) {
     return (
       <div className="min-h-screen bg-[#090A0C] text-[#F3F1EC] p-5 flex flex-col items-center justify-center text-center">
@@ -307,11 +305,18 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
   }
 
   return (
-    <div className="min-h-screen bg-[#090A0C] text-[#F3F1EC] flex flex-col selection:bg-[#D6B875] selection:text-[#090A0C]">
+    <div className="min-h-screen bg-[#090A0C] text-[#F3F1EC] flex flex-col selection:bg-[#D6B875] selection:text-[#090A0C] relative overflow-x-hidden">
+      {/* ---------------------------------------------------- */}
+      {/* CORNER GOLD DIAGONAL PINSTRIPES (Inspired by flyer) */}
+      {/* ---------------------------------------------------- */}
+      <div className="absolute top-0 left-0 w-32 h-32 pointer-events-none opacity-25 overflow-hidden z-0">
+        <div className="w-full h-full bg-[repeating-linear-gradient(45deg,#D6B875_0,#D6B875_1px,transparent_0,transparent_9px)]" />
+      </div>
+
       {/* ---------------------------------------------------- */}
       {/* COMPACT MOBILE-FIRST APP BAR (Sticky & Non-intrusive) */}
       {/* ---------------------------------------------------- */}
-      <header className="sticky top-0 z-30 glass-header border-b border-[#1E232B]/80 px-4 py-2.5 transition-all">
+      <header className="sticky top-0 z-30 glass-header border-b border-[#1E232B]/80 px-3.5 py-2 transition-all">
         <div className="max-w-md mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
             {step > 1 && step < 5 ? (
@@ -324,27 +329,26 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
                 <ChevronLeft className="w-4 h-4" />
               </button>
             ) : (
-              <div className="w-8 h-8 rounded-full bg-[#D6B875]/15 border border-[#D6B875]/30 flex items-center justify-center text-[#D6B875] shrink-0">
-                <Scissors className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-full bg-[#D6B875]/15 border border-[#D6B875]/40 flex items-center justify-center text-[#D6B875] shrink-0">
+                <Crown className="w-4 h-4" />
               </div>
             )}
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <h1 className="font-bold text-sm text-[#F3F1EC] truncate tracking-tight">
-                  {shop.name}
+                <h1 className="font-cinzel font-bold text-xs sm:text-sm gold-gradient-text tracking-[0.14em] truncate">
+                  ANTHONY'S BARBEARIA
                 </h1>
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#D6B875] shrink-0" />
               </div>
-              <p className="text-[11px] text-[#8E939B] truncate flex items-center gap-1">
-                <MapPin className="w-2.5 h-2.5 text-[#D6B875] shrink-0" />
-                {shop.address ? shop.address.split('-')[0] : 'Barbearia'}
+              <p className="text-[10px] text-[#8E939B] truncate tracking-wider uppercase font-semibold">
+                Estilo • Respeito • Autoestima
               </p>
             </div>
           </div>
 
           {/* Step Pill */}
           {step < 5 && (
-            <div className="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#14171D] border border-[#232932] text-[11px] font-semibold text-[#D6B875]">
+            <div className="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#14171D] border border-[#D6B875]/30 text-[10px] font-bold text-[#D6B875] uppercase tracking-wider">
               <span>Etapa {step}/4</span>
             </div>
           )}
@@ -352,9 +356,9 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
 
         {/* 3px Slim Golden Progress Bar */}
         {step < 5 && (
-          <div className="max-w-md mx-auto mt-2 h-[2.5px] bg-[#161A20] rounded-full overflow-hidden">
+          <div className="max-w-md mx-auto mt-1.5 h-[2.5px] bg-[#161A20] rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-[#D6B875] to-[#F3DB9A] transition-all duration-300 rounded-full"
+              className="h-full bg-gradient-to-r from-[#D6B875] via-[#F3DB9A] to-[#D6B875] transition-all duration-300 rounded-full"
               style={{ width: `${(step / 4) * 100}%` }}
             />
           </div>
@@ -364,7 +368,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
       {/* ---------------------------------------------------- */}
       {/* MAIN CONTENT CONTAINER (Edge-to-edge mobile, max-w-md) */}
       {/* ---------------------------------------------------- */}
-      <main className="flex-1 w-full max-w-md mx-auto px-3.5 pt-3.5 pb-24 flex flex-col">
+      <main className="flex-1 w-full max-w-md mx-auto px-3.5 pt-3 pb-24 flex flex-col relative z-10">
         {/* Error notification banner */}
         {submissionError && (
           <FeedbackAlert
@@ -377,7 +381,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
 
         {/* Active Breadcrumb Selection Preview (Ultra Compact) */}
         {step > 1 && step < 5 && (
-          <div className="mb-3 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 text-xs">
+          <div className="mb-2.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 text-xs">
             <button
               onClick={() => setStep(1)}
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#14171D] border border-[#242A33] text-[#D6B875] font-medium text-[11px] shrink-0 active-press hover:border-[#D6B875]/40"
@@ -417,25 +421,26 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
         )}
 
         {/* ---------------------------------------------------- */}
-        {/* ETAPA 1: SELEÇÃO DE SERVIÇO (Compacto & Fluido) */}
+        {/* ETAPA 1: TABELA DE PREÇOS (Idêntica ao flyer) */}
         {/* ---------------------------------------------------- */}
         {step === 1 && (
-          <div className="space-y-2.5 animate-fade-in-up">
-            <div className="flex items-center justify-between pb-1">
-              <div>
-                <h2 className="text-sm font-bold text-[#F3F1EC] tracking-tight">
-                  Escolha o serviço
-                </h2>
-                <p className="text-[11px] text-[#8E939B]">
-                  Toque para selecionar e avançar
-                </p>
-              </div>
-              <span className="text-[11px] font-medium text-[#D6B875] bg-[#D6B875]/10 px-2 py-0.5 rounded-full border border-[#D6B875]/20">
-                {services.length} opções
-              </span>
+          <div className="space-y-3 animate-fade-in-up">
+            {/* Brand Crown & A Monogram Hero */}
+            <div className="pt-1 pb-1">
+              <AnthonysLogo size="sm" showTagline={false} />
             </div>
 
-            <div className="space-y-2">
+            {/* Brushed Gold Banner: TABELA DE PREÇOS */}
+            <div className="text-center my-1">
+              <div className="inline-block px-6 py-1.5 rounded-full gold-brush-banner shadow-md">
+                <span className="font-cinzel text-xs font-black tracking-[0.25em] text-[#090A0C]">
+                  TABELA DE PREÇOS
+                </span>
+              </div>
+            </div>
+
+            {/* Services List matching flyer */}
+            <div className="space-y-2 pt-1">
               {services.map((srv) => {
                 const isSelected = selectedService?.id === srv.id;
                 return (
@@ -445,47 +450,86 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
                       setSelectedService(srv);
                       setStep(2);
                     }}
-                    className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 active-press ${
+                    className={`p-2.5 sm:p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-2.5 active-press ${
                       isSelected
                         ? 'bg-[#181C22] border-[#D6B875] gold-glow-subtle'
                         : 'bg-[#12151A] border-[#22272F] hover:border-[#D6B875]/50 hover:bg-[#161A20]'
                     }`}
                   >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-[#181C22] border border-[#292F38] flex items-center justify-center text-[#D6B875] shrink-0">
-                        <Scissors className="w-4 h-4" />
-                      </div>
+                    {/* Circular Gold Icon */}
+                    <div className="w-9 h-9 rounded-full bg-[#181C22] border border-[#D6B875]/50 flex items-center justify-center text-[#D6B875] shrink-0 shadow-inner">
+                      <ServiceIcon serviceId={srv.id} serviceName={srv.name} className="w-4 h-4 text-[#D6B875]" />
+                    </div>
+
+                    {/* Service Name + Dotted Leader */}
+                    <div className="flex-1 min-w-0 flex items-center gap-2">
                       <div className="min-w-0">
-                        <h3 className="font-semibold text-sm text-[#F3F1EC] leading-tight truncate">
+                        <h3 className="font-bold text-xs sm:text-sm text-[#F3F1EC] uppercase tracking-wide truncate">
                           {srv.name}
                         </h3>
-                        {srv.description && (
-                          <p className="text-[11px] text-[#8E939B] mt-0.5 line-clamp-1">
-                            {srv.description}
-                          </p>
-                        )}
-                        <div className="flex items-center gap-1.5 text-[11px] text-[#8E939B] mt-1 font-medium">
-                          <Clock className="w-3 h-3 text-[#D6B875]" />
+                        <div className="flex items-center gap-1.5 text-[10px] text-[#8E939B]">
+                          <Clock className="w-2.5 h-2.5 text-[#D6B875]" />
                           <span>{formatDuration(srv.duration_minutes)}</span>
                         </div>
                       </div>
+
+                      {/* Dotted leader line like in flyer */}
+                      <div className="flex-1 border-b border-dotted border-[#D6B875]/30 mx-1 hidden xs:block" />
                     </div>
 
-                    <div className="text-right shrink-0 flex items-center gap-2">
-                      <div className="text-sm font-bold text-[#D6B875]">
+                    {/* Brushed Gold Price Pill Badge */}
+                    <div className="shrink-0 flex items-center gap-1.5">
+                      <div className="px-3 py-1 rounded-full gold-brush-tag text-xs sm:text-sm tracking-tight font-extrabold text-[#090A0C]">
                         {formatBRL(srv.price_cents)}
                       </div>
-                      <ChevronRight className="w-4 h-4 text-[#474E58]" />
+                      <ChevronRight className="w-3.5 h-3.5 text-[#8E939B]" />
                     </div>
                   </div>
                 );
               })}
             </div>
+
+            {/* Slogan cursivo do flyer */}
+            <div className="text-center pt-3 pb-1">
+              <p className="font-cursive text-xl sm:text-2xl text-[#D6B875] tracking-wide leading-tight">
+                Mais que um corte, é um cuidado com você!
+              </p>
+            </div>
+
+            {/* 3 Pilares / Selos do rodapé do flyer */}
+            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#1E232B] text-center">
+              <div className="flex flex-col items-center p-2 rounded-xl bg-[#12151A]/60 border border-[#22272F]">
+                <div className="w-6 h-6 rounded-full bg-[#D6B875]/10 border border-[#D6B875]/30 flex items-center justify-center text-[#D6B875] mb-1">
+                  <Shield className="w-3 h-3" />
+                </div>
+                <span className="text-[8px] font-bold text-[#F3F1EC] uppercase tracking-wider leading-tight">
+                  ATENDIMENTO DE QUALIDADE
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center p-2 rounded-xl bg-[#12151A]/60 border border-[#22272F]">
+                <div className="w-6 h-6 rounded-full bg-[#D6B875]/10 border border-[#D6B875]/30 flex items-center justify-center text-[#D6B875] mb-1">
+                  <Clock className="w-3 h-3" />
+                </div>
+                <span className="text-[8px] font-bold text-[#F3F1EC] uppercase tracking-wider leading-tight">
+                  SEU TEMPO É IMPORTANTE
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center p-2 rounded-xl bg-[#12151A]/60 border border-[#22272F]">
+                <div className="w-6 h-6 rounded-full bg-[#D6B875]/10 border border-[#D6B875]/30 flex items-center justify-center text-[#D6B875] mb-1">
+                  <Crown className="w-3 h-3" />
+                </div>
+                <span className="text-[8px] font-bold text-[#F3F1EC] uppercase tracking-wider leading-tight">
+                  AQUI VOCÊ SE SENTE BEM
+                </span>
+              </div>
+            </div>
           </div>
         )}
 
         {/* ---------------------------------------------------- */}
-        {/* ETAPA 2: SELEÇÃO DE PROFISSIONAL (Compacto & Direto) */}
+        {/* ETAPA 2: SELEÇÃO DE PROFISSIONAL */}
         {/* ---------------------------------------------------- */}
         {step === 2 && (
           <div className="space-y-2.5 animate-fade-in-up">
@@ -494,11 +538,11 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
                 Com quem deseja cortar?
               </h2>
               <p className="text-[11px] text-[#8E939B]">
-                Escolha seu barbeiro favorito ou o primeiro disponível
+                Escolha seu barbeiro de preferência ou o primeiro disponível
               </p>
             </div>
 
-            {/* Quick Option: Qualquer Profissional (Fast track) */}
+            {/* Quick Option: Qualquer Profissional */}
             <div
               onClick={() => {
                 setSelectedBarberId(null);
@@ -522,7 +566,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
                     </span>
                   </div>
                   <div className="text-[11px] text-[#8E939B]">
-                    Maior variedade de horários livres
+                    Maior variedade de horários livres hoje
                   </div>
                 </div>
               </div>
@@ -547,7 +591,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-full bg-[#181C22] border-2 border-[#292F38] flex items-center justify-center text-[#D6B875] font-bold overflow-hidden shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-[#181C22] border-2 border-[#D6B875]/50 flex items-center justify-center text-[#D6B875] font-bold overflow-hidden shrink-0">
                         {b.photo_url ? (
                           <img
                             src={b.photo_url}
@@ -570,7 +614,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
                         ) : (
                           <div className="text-[11px] text-[#22C55E] flex items-center gap-1 font-medium">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />
-                            Disponível
+                            Disponível hoje
                           </div>
                         )}
                       </div>
@@ -803,17 +847,17 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
             </div>
 
             {/* VIP Booking Ticket Summary Card */}
-            <div className="p-3.5 bg-[#12151A] rounded-2xl border border-[#D6B875]/30 space-y-2.5 text-xs relative overflow-hidden">
+            <div className="p-3.5 bg-[#12151A] rounded-2xl border border-[#D6B875]/40 space-y-2.5 text-xs relative overflow-hidden shadow-lg">
               <div className="flex items-center justify-between pb-2 border-b border-[#22272F]">
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 rounded-lg bg-[#D6B875]/15 text-[#D6B875] flex items-center justify-center">
                     <Scissors className="w-3.5 h-3.5" />
                   </div>
-                  <span className="font-semibold text-[#F3F1EC] text-xs">
+                  <span className="font-bold text-[#F3F1EC] text-xs uppercase tracking-wide">
                     {selectedService?.name}
                   </span>
                 </div>
-                <span className="font-bold text-sm text-[#D6B875]">
+                <span className="font-black text-sm text-[#D6B875]">
                   {formatBRL(selectedService?.price_cents)}
                 </span>
               </div>
@@ -821,13 +865,13 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
               <div className="grid grid-cols-2 gap-2 text-[11px]">
                 <div>
                   <span className="text-[#8E939B] block">Profissional:</span>
-                  <span className="font-medium text-[#F3F1EC]">
+                  <span className="font-semibold text-[#F3F1EC]">
                     {selectedBarberObj ? selectedBarberObj.name : 'Qualquer disponível'}
                   </span>
                 </div>
                 <div>
                   <span className="text-[#8E939B] block">Data & Horário:</span>
-                  <span className="font-semibold text-[#D6B875]">
+                  <span className="font-bold text-[#D6B875]">
                     {formatDateBR(selectedDate)} às {selectedSlot?.time}
                   </span>
                 </div>
@@ -835,7 +879,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
 
               <div className="pt-2 border-t border-[#22272F] flex items-center justify-between text-[11px] text-[#8E939B]">
                 <span>Duração: {formatDuration(selectedService?.duration_minutes || 30)}</span>
-                <span className="text-[#22C55E] flex items-center gap-1 font-medium">
+                <span className="text-[#22C55E] flex items-center gap-1 font-semibold">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   Pague no local
                 </span>
@@ -865,7 +909,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
                 helperText="Você receberá a confirmação da barbearia neste número."
               />
 
-              {/* Honeypot hidden input against spam bots */}
+              {/* Honeypot hidden input */}
               <input
                 type="text"
                 name="honeypot"
@@ -882,7 +926,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
               <Button
                 type="submit"
                 isLoading={isSubmitting}
-                className="w-full py-3.5 text-sm font-bold bg-[#D6B875] text-[#090A0C] hover:bg-[#E5C885] rounded-xl shadow-lg gold-glow-subtle active-press"
+                className="w-full py-3.5 text-sm font-bold bg-gradient-to-r from-[#D6B875] to-[#E5C885] text-[#090A0C] hover:brightness-105 rounded-xl shadow-lg gold-glow-subtle active-press"
               >
                 Confirmar Agendamento
               </Button>
@@ -909,7 +953,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
                   : 'Reserva Solicitada com Sucesso!'}
               </h2>
               <p className="text-xs text-[#8E939B] mt-0.5">
-                {shop.name} aguarda você!
+                Anthony's Barbearia aguarda você!
               </p>
             </div>
 
@@ -953,7 +997,7 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
                 <div className="flex justify-between">
                   <span className="text-[#8E939B]">Profissional:</span>
                   <span className="font-medium text-[#F3F1EC]">
-                    {bookingResult.barber_name_snapshot || 'Profissional da equipe'}
+                    {bookingResult.barber_name_snapshot || "Anthony's Equipe"}
                   </span>
                 </div>
                 <div className="flex justify-between">

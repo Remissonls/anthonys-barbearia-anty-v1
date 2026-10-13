@@ -23,7 +23,7 @@ import { generatePublicCode } from '../utils/publicCode';
 import { calculateAvailableSlots, intervalsOverlap, isStatusBlocking } from '../utils/availability';
 import { toISODateString } from '../utils/date';
 
-const STORAGE_KEY = 'agendapro_demo_database_v1';
+const STORAGE_KEY = 'agendapro_demo_database_v2_anthonys';
 
 interface DemoDatabase {
   barbershop: Barbershop;
@@ -46,7 +46,10 @@ function loadDatabase(): DemoDatabase {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      if (parsed?.barbershop?.name === "Anthony's Barbearia") {
+        return parsed;
+      }
     }
   } catch (e) {
     console.error('Failed reading demo database from localStorage, resetting to initial seed.', e);
@@ -133,7 +136,15 @@ export class DemoService implements IApiService {
   }
 
   async getPublicBarbershop(slug: string): Promise<Barbershop | null> {
-    if (this.db.barbershop.slug === slug && this.db.barbershop.is_active) {
+    const s = slug?.toLowerCase();
+    if (
+      (this.db.barbershop.slug === slug ||
+        s === 'anthonys' ||
+        s === 'anthonys-barbearia' ||
+        s === 'mestre-navalha' ||
+        s === 'navalha-de-ouro') &&
+      this.db.barbershop.is_active
+    ) {
       return this.db.barbershop;
     }
     return null;

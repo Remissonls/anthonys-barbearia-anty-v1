@@ -161,7 +161,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onSuccess }) => {
               disabled={isLoading}
             >
               <Sparkles className="w-4 h-4" />
-              <span>Entrar como Demonstração (Mestre Navalha)</span>
+              <span>Entrar como Demonstração (Anthony's Barbearia)</span>
             </Button>
           </div>
         )}
