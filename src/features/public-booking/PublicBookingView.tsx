@@ -32,8 +32,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Phone,
-  Store,
-  MapPin,
   Sparkles,
   AlertCircle,
   Copy,

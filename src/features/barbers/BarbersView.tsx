@@ -19,7 +19,6 @@ import {
   User,
   Plus,
   Edit2,
-  Calendar,
   Clock,
   Scissors,
   CheckCircle2,

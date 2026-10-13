@@ -1,186 +1,187 @@
-# AgendaPro — Sistema Web de Agendamento e Gestão para Barbearias
+# 💈 Anthony's Barbearia — AgendaPro Web SaaS
 
-AgendaPro é uma plataforma web SaaS multiempresa desenvolvida sob o princípio **mobile-first**, com foco em barbearias brasileiras. Ela combina um painel administrativo completo para o proprietário gerenciar serviços, equipe e atendimento, com uma página pública exclusiva de agendamento online de alta conversão sem exigir cadastro ou download por parte dos clientes.
+> **Estilo • Respeito • Autoestima**  
+> *"Mais que um corte, é um cuidado com você!"*
 
----
-
-## 1. Funcionalidades Implementadas
-
-### Área Administrativa (Proprietário)
-- **Autenticação & Sessão:** Login por e-mail/senha, cadastro de nova barbearia, recuperação de senha e acesso rápido para demonstração.
-- **Onboarding Guiado:** Configuração inicial de dados comerciais, slug da página pública, primeiro serviço e primeiro profissional.
-- **Dashboard Operacional:** Responde instantaneamente às 3 perguntas diárias:
-  1. *Quais são os próximos atendimentos?* (cronograma em tempo real com ações rápidas)
-  2. *Existe alguma pendência?* (painel de agendamentos pendentes de confirmação)
-  3. *Como está a movimentação de hoje?* (total do dia, em atendimento, concluídos, cancelados e faturamento estimado).
-- **Agenda Diária & Semanal:** Navegação entre datas, botão "Hoje", filtros por barbeiro e por status, e cartões de atendimento com status visual e textual.
-- **Criação Manual de Agendamentos:** Reserva direta pelo proprietário com busca/criação de clientes e validação preventiva contra conflitos.
-- **Gestão de Serviços:** CRUD de serviços, valores em centavos BRL (`price_cents`), durações em minutos e desativação sem afetar dados históricos.
-- **Gestão de Barbeiros & Equipe:** Cadastro de profissionais, vinculação de serviços habilitados (`barber_services`), escalas individuais com horários de entrada/saída, pausa de almoço e registro de folgas/bloqueios pontuais (`barber_time_off`).
-- **Base de Clientes:** Listagem, pesquisa instantânea por nome ou telefone normalizado, histórico de atendimentos e atalho direto para WhatsApp.
-- **Configurações Gerais:** Horários de funcionamento por dia da semana (`business_hours`), modo de confirmação de reservas (automática vs. manual) e link público exclusivo.
-
-### Página Pública de Agendamento (`/agendar/:slug`)
-- **Zero Login:** O cliente agenda em menos de 1 minuto sem criar conta ou digitar senhas.
-- **Fluxo em 7 Etapas Otimizado para Mobile:**
-  1. Seleção de serviço com nome, duração e valor.
-  2. Escolha do barbeiro preferido ou opção *"Qualquer profissional disponível"*.
-  3. Seleção do dia com carrossel dos próximos 14 dias.
-  4. Horários disponíveis em botões táteis (cadência de 15 minutos).
-  5. Contato do cliente (Nome e WhatsApp com máscara automática e proteção anti-bot via honeypot).
-  6. Revisão completa da reserva antes do envio.
-  7. Confirmação instantânea com código exclusivo da reserva (ex: `AP-VVU49`).
-- **Prevenção de Conflitos & Concorrência:** Proteção atômica no banco de dados contra agendamentos simultâneos para o mesmo barbeiro.
+Sistema web moderno e completo para agendamento online e gestão para barbearias, com arquitetura **mobile-first**, design dark luxuoso com detalhes dourados, zero burocracia para o cliente (sem necessidade de login ou app) e painel administrativo completo para gestão do estabelecimento.
 
 ---
 
-## 2. Stack Tecnológica
+## 🚀 Tabela de Serviços e Preços Oficiais
+
+| Ícone | Serviço | Valor | Duração |
+| :---: | :--- | :---: | :---: |
+| ✂️ | **Corte de Cabelo** | **R$ 25,00** | 30 min |
+| 🧔 | **Barba** | **R$ 20,00** | 25 min |
+| ✂️🧔 | **Corte + Barba** | **R$ 40,00** | 50 min |
+| 👁️ | **Sobrancelha** | **R$ 5,00** | 15 min |
+| 👣 | **Pezinho** | **R$ 5,00** | 15 min |
+| ✒️ | **Pigmentação** | **R$ 10,00** | 20 min |
+
+---
+
+## 🌟 Principais Funcionalidades
+
+### 📱 Para o Cliente (Página Pública `/agendar/:slug`)
+- **Zero Login:** O cliente agenda em menos de 1 minuto sem precisar criar conta ou baixar aplicativo.
+- **Fluxo Mobile-First em 4 Etapas Fluidas:**
+  1. **Serviço:** Tabela de preços oficial com ícones circulares e tags douradas.
+  2. **Profissional:** Escolha de barbeiro preferido ou atalho *"Qualquer profissional disponível"* (mais rápido).
+  3. **Data & Horário Unificados:** Carrossel de 14 dias + horários livres agrupados por período (*Manhã*, *Tarde*, *Noite*).
+  4. **Identificação & Confirmação:** Apenas Nome e WhatsApp com resumo do agendamento estilo VIP Pass.
+- **Comprovante Digital & Ações Rápidas:**
+  - Código único de reserva (ex: `AP-PQSVS`) com botão de copiar em 1 toque.
+  - Botão direto para **Avisar no WhatsApp** da barbearia com mensagem pré-formatada.
+  - Botão para **Adicionar ao Google Agenda**.
+- **Prevenção Concorrente de Double-Booking:** Restrição atômica no banco contra agendamentos simultâneos para o mesmo barbeiro.
+
+### 💼 Para o Proprietário / Barbeiro (Painel `/app`)
+- **Dashboard Operacional:** Resumo diário de atendimentos, agendamentos pendentes e previsão de faturamento do dia.
+- **Agenda Completa:** Visualização diária e semanal com filtros por barbeiro e status.
+- **Agendamento Manual:** Inclusão rápida de clientes presenciais ou via telefone com validação preventiva.
+- **Gestão da Equipe & Escalas:** Cadastro de profissionais, folgas pontuais e jornadas de trabalho.
+- **Base de Clientes:** Histórico de frequência e atalho direto para WhatsApp do cliente.
+
+---
+
+## 🛠️ Stack Tecnológica
 
 - **Frontend:** React 19, TypeScript (modo estrito), Vite 8.
-- **Estilização:** Tailwind CSS v4, Vanilla CSS Design Tokens (paleta grafite `#0B0D0F`, `#14171B` com destaques dourados `#D6B875`).
-- **Ícones:** Lucide React.
-- **Banco de Dados & Autenticação:** PostgreSQL com Supabase (Row Level Security, extensões `btree_gist` e restrição de exclusão temporal `tstzrange`).
-- **Backend Serverless:** Supabase Edge Functions (Deno/TypeScript) e Stored Procedures SQL (`book_public_appointment`).
-- **Testes Automatizados:** Vitest e React Testing Library.
+- **Estilização:** Tailwind CSS v4, Vanilla CSS tokens, Google Fonts (`Cinzel`, `Caveat`, `Inter`).
+- **Ícones:** Lucide React + SVGs customizados.
+- **Banco de Dados & Auth:** PostgreSQL via Supabase (Row Level Security, extensões `btree_gist`, restrição temporal `tstzrange`).
+- **Testes:** Vitest e React Testing Library (15 testes passando).
+- **Hospedagem:** Otimizado para **Vercel** (inclui `vercel.json` para rotas SPA).
 
 ---
 
-## 3. Pré-requisitos
+## 💻 Como Rodar Localmente
 
-- **Node.js:** Versão 20 ou superior (testado no Node.js v25).
-- **npm:** Versão 10 ou superior.
-- **Supabase CLI:** (Opcional, para aplicar migrations localmente ou no projeto Supabase remoto).
-
----
-
-## 4. Instalação e Execução Local
-
-### 1. Clonar ou Acessar o Repositório
+### 1. Clonar e Instalar
 ```bash
+git clone <URL_DO_REPOSITORIO>
 cd agendapro
-```
-
-### 2. Instalar Dependências
-```bash
 npm install
 ```
 
-### 3. Configurar Variáveis de Ambiente
+### 2. Configurar Variáveis de Ambiente
 Copie o arquivo de exemplo:
 ```bash
 cp .env.example .env
 ```
 
-Conteúdo de `.env`:
+Para rodar offline imediatamente (sem precisar do Supabase remoto):
 ```env
-# Modo Demonstração (Permite usar e avaliar o AgendaPro imediatamente sem credenciais remotas)
 VITE_DEMO_MODE=true
-
-# Fuso horário padrão
 VITE_DEFAULT_TIMEZONE=America/Maceio
-
-# Credenciais do Supabase (Obrigatórias apenas quando VITE_DEMO_MODE=false)
-VITE_SUPABASE_URL=https://seu-projeto.supabase.co
-VITE_SUPABASE_ANON_KEY=sua-chave-publica-anon
 ```
 
-> **Nota:** Por padrão, com `VITE_DEMO_MODE=true`, o AgendaPro executa com um motor de banco de dados em memória/LocalStorage idêntico ao PostgreSQL, populado com a "Barbearia Mestre Navalha" (slug `mestre-navalha`).
-
-### 4. Executar Servidor de Desenvolvimento
+### 3. Iniciar Servidor de Desenvolvimento
 ```bash
 npm run dev
 ```
-Acesse no navegador:
-- Painel Administrativo: `http://localhost:5173/app`
-- Página Pública de Agendamento: `http://localhost:5173/agendar/mestre-navalha`
 
----
+Acesse:
+- **Página de Agendamento:** `http://localhost:5173/agendar/anthonys-barbearia`
+- **Painel Administrativo:** `http://localhost:5173/app`
 
-## 5. Execução de Testes Automatizados
-
-O AgendaPro inclui testes unitários e de integração cobrindo cálculo de disponibilidade, restrições de concorrência, formatação monetária e normalização de telefones:
-
+### 4. Testes & Validação de Build
 ```bash
+# Executar suíte de testes (Vitest)
 npm test
-```
 
-Para executar em modo contínuo (watch):
-```bash
-npm run test:watch
-```
-
----
-
-## 6. Build de Produção
-
-Para validar a tipagem estrita do TypeScript e gerar o bundle otimizado:
-```bash
+# Validar tipagem e compilar bundle de produção
 npm run build
 ```
 
-Para visualizar o build localmente:
+---
+
+## 🚀 Guia Passo a Passo: Subir para o GitHub (Git)
+
+### 1. Inicializar e comitar (caso ainda não tenha feito)
 ```bash
-npm run preview
+git init
+git add .
+git commit -m "feat: initial commit - Anthony's Barbearia production MVP"
+```
+
+### 2. Criar repositório no GitHub
+1. Acesse [github.com/new](https://github.com/new) e crie um repositório (ex: `anthonys-barbearia` ou `agendapro`).
+2. Vincule e envie os arquivos:
+```bash
+git branch -M main
+git remote add origin https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
+git push -u origin main
 ```
 
 ---
 
-## 7. Configuração do Supabase e Banco de Dados
+## 🗄️ Guia Passo a Passo: Configurar o Supabase
 
-### 1. Aplicar Migrations SQL
-Execute o arquivo `supabase/migrations/00001_initial_schema.sql` via Supabase Dashboard (SQL Editor) ou através do Supabase CLI:
+Quando quiser colocar o sistema em produção com banco de dados real:
 
-```bash
-supabase db push
-# ou
-supabase migration up
-```
+### 1. Criar Projeto no Supabase
+1. Acesse [supabase.com](https://supabase.com) e crie um novo projeto.
+2. Defina uma senha forte para o banco e selecione a região (ex: `sa-east-1` São Paulo).
 
-Esta migration cria:
-1. Extensões `uuid-ossp` e `btree_gist`.
-2. Tabelas: `barbershops`, `barbers`, `services`, `barber_services`, `business_hours`, `barber_working_hours`, `barber_time_off`, `customers`, `appointments`.
-3. **Restrição de Exclusão (Exclusion Constraint):**
-   ```sql
-   ALTER TABLE appointments
-   ADD CONSTRAINT no_overlapping_appointments
-   EXCLUDE USING gist (
-     barber_id WITH =,
-     tstzrange(starts_at, ends_at) WITH &&
-   )
-   WHERE (status IN ('pending', 'confirmed', 'in_progress'));
-   ```
-4. Políticas de Row Level Security (RLS) que isolam completamente os dados entre diferentes barbearias.
-5. Função transacional `book_public_appointment(...)` com segurança elevada (`SECURITY DEFINER` com `search_path = public, pg_temp`).
+### 2. Rodar as Tabelas e Políticas (Migration)
+1. No painel do Supabase, abra o menu **SQL Editor**.
+2. Clique em **New query**.
+3. Copie todo o conteúdo do arquivo [`supabase/migrations/00001_initial_schema.sql`](supabase/migrations/00001_initial_schema.sql) e cole no editor.
+4. Clique em **Run**. Isso criará todas as tabelas, índices `btree_gist`, trigger functions, políticas de RLS e o procedure `book_public_appointment`.
 
-### 2. Popular Dados de Demonstração (Seed)
-Execute o arquivo `supabase/seed.sql` no SQL Editor do Supabase para criar a barbearia fictícia "Barbearia Mestre Navalha" com 3 profissionais, 5 serviços e agendamentos de teste.
+### 3. Inserir Dados Iniciais (Seed)
+1. No **SQL Editor**, abra outra query.
+2. Copie o conteúdo de [`supabase/seed.sql`](supabase/seed.sql) e cole no editor.
+3. Clique em **Run**. A **Anthony's Barbearia** com os 6 serviços oficiais e equipe será criada no banco.
+
+### 4. Obter as Chaves de Conexão
+1. No Supabase, vá em **Project Settings** > **API**.
+2. Copie os valores:
+   - **Project URL** (ex: `https://xyzcompany.supabase.co`)
+   - **Project API Keys** > `anon public`
 
 ---
 
-## 8. Implantação das Edge Functions
+## 🌐 Guia Passo a Passo: Deploy na Vercel
 
-Para publicar as Edge Functions no Supabase:
-```bash
-supabase functions deploy public-booking
-supabase functions deploy public-availability
-```
+O projeto já inclui o arquivo [`vercel.json`](vercel.json) configurado para redirecionar todas as rotas para o `index.html`, garantindo que links como `/agendar/anthonys-barbearia` e `/app` funcionem sem erro 404 ao recarregar a página.
+
+### 1. Conectar com o GitHub
+1. Acesse [vercel.com](https://vercel.com) e faça login com seu GitHub.
+2. Clique em **Add New...** > **Project**.
+3. Selecione o repositório que você acabou de subir.
+
+### 2. Configurar Build & Output
+- **Framework Preset:** `Vite`
+- **Root Directory:** `./`
+- **Build Command:** `npm run build`
+- **Output Directory:** `dist`
+
+### 3. Configurar as Variáveis de Ambiente (Environment Variables)
+No campo de variáveis da Vercel, adicione:
+
+| Chave | Valor Recomendado | Descrição |
+| :--- | :--- | :--- |
+| `VITE_DEMO_MODE` | `false` *(ou `true` se quiser testar sem banco)* | Modo de operação |
+| `VITE_SUPABASE_URL` | `https://seu-projeto.supabase.co` | URL da sua instância Supabase |
+| `VITE_SUPABASE_ANON_KEY` | `sua-chave-anon-publica` | Chave pública anônima do Supabase |
+| `VITE_DEFAULT_TIMEZONE` | `America/Maceio` | Fuso horário da barbearia |
+
+### 4. Finalizar Deploy
+1. Clique em **Deploy**.
+2. Em menos de 2 minutos seu site estará no ar com link público HTTPS (ex: `https://anthonys-barbearia.vercel.app`)!
 
 ---
 
-## 9. Limitações Conhecidas do MVP & Próximos Passos Comerciais
+## 🔒 Segurança e Regras de Negócio Implementadas
 
-Conforme o escopo do produto (Seção 2.2 do Documento Mestre):
-1. **WhatsApp & Notificações:** Não realiza disparos automatizados de WhatsApp via API oficial nesta versão (fornece link `wa.me` manual com um clique).
-2. **Pagamentos Online:** Não processa cartão nem cobrança de sinal no checkout (o cliente paga diretamente no estabelecimento).
-3. **Multi-usuário por Barbeiro:** Os barbeiros são registros gerenciados pela conta do proprietário da barbearia; logins individuais por barbeiro serão implementados em versão posterior.
+1. **Proteção Contra Double-Booking:** Exclusion constraint nativa do PostgreSQL (`tstzrange` via `btree_gist`) impedindo qualquer agendamento duplo mesmo sob concorrência simultânea.
+2. **Proteção Anti-Bot:** Honeypot invisível na página pública de agendamento que rejeita preenchimentos automáticos de robôs sem gerar atrito para o cliente humano.
+3. **Isolamento Multitenant:** Row Level Security (RLS) habilitado em todas as tabelas, impedindo que um proprietário acerte ou visualize dados de outras barbearias.
+4. **Armazenamento de Valores Inteiros:** Todos os preços são gravados em centavos BRL (`price_cents`), prevenindo erros de arredondamento de ponto flutuante.
 
 ---
 
-## 10. Checklist Antes de Vender para Clientes Reais
-
-- [ ] Criar projeto de produção no Supabase.
-- [ ] Aplicar migration `00001_initial_schema.sql` e verificar a extensão `btree_gist`.
-- [ ] Configurar chaves `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` no ambiente de hospedagem (Vercel, Netlify ou Cloudflare Pages).
-- [ ] Definir `VITE_DEMO_MODE=false`.
-- [ ] Configurar domínio personalizado com certificado SSL.
-- [ ] Configurar envio de e-mails transacionais (SMTP) no Supabase Auth para recuperação de senha.
+## 📄 Licença
+Distribuído sob a licença MIT. Consulte `LICENSE` para mais detalhes.

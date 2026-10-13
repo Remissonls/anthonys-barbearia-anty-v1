@@ -115,6 +115,7 @@ export interface Appointment {
   price_cents_snapshot: number;
   duration_minutes_snapshot: number;
   service_name_snapshot: string;
+  barber_name_snapshot?: string | null;
   public_code: string;
   created_by_user_id?: string | null;
   created_at: string;
