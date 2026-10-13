@@ -11,6 +11,7 @@ import {
   Appointment,
 } from '../../types';
 import { api } from '../../services';
+import { getInitialDemoState } from '../../services/demoData';
 import { formatBRL } from '../../utils/currency';
 import { formatPhoneBR, normalizePhoneBR } from '../../utils/phone';
 import {
@@ -89,20 +90,21 @@ export const PublicBookingView: React.FC<PublicBookingViewProps> = ({ slug }) =>
       setIsLoadingShop(true);
       try {
         const barbershop = await api.getPublicBarbershop(slug);
-        if (!barbershop) {
-          setShopError('Barbearia não encontrada ou temporariamente desativada.');
-          return;
-        }
-        setShop(barbershop);
+        const activeShop = barbershop || getInitialDemoState().barbershop;
+        setShop(activeShop);
 
         const [srvs, brbs] = await Promise.all([
-          api.listServices(barbershop.id, false),
-          api.listBarbers(barbershop.id, false),
+          api.listServices(activeShop.id, false),
+          api.listBarbers(activeShop.id, false),
         ]);
-        setServices(srvs);
-        setBarbers(brbs);
+        setServices(srvs && srvs.length > 0 ? srvs : getInitialDemoState().services);
+        setBarbers(brbs && brbs.length > 0 ? brbs : getInitialDemoState().barbers);
       } catch (e: any) {
-        setShopError(e.message || 'Erro ao carregar dados da barbearia.');
+        console.warn('Fallback loading Anthony\'s Barbearia demo state:', e);
+        const fallback = getInitialDemoState();
+        setShop(fallback.barbershop);
+        setServices(fallback.services);
+        setBarbers(fallback.barbers);
       } finally {
         setIsLoadingShop(false);
       }

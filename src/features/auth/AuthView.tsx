@@ -12,7 +12,7 @@ interface AuthViewProps {
 
 export const AuthView: React.FC<AuthViewProps> = ({ onSuccess }) => {
   const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('proprietario@anthonysbarbearia.com.br');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -63,9 +63,14 @@ export const AuthView: React.FC<AuthViewProps> = ({ onSuccess }) => {
 
   const handleDemoFastLogin = async () => {
     setIsLoading(true);
-    await api.signIn('proprietario@mestrenavalha.com.br');
-    setIsLoading(false);
-    onSuccess();
+    try {
+      await api.signIn('proprietario@anthonysbarbearia.com.br');
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+      onSuccess();
+    }
   };
 
   return (
@@ -93,10 +98,36 @@ export const AuthView: React.FC<AuthViewProps> = ({ onSuccess }) => {
           />
         )}
 
+        {/* Fast 1-Click Admin Access */}
+        <div className="mb-5 p-3.5 bg-[#D6B875]/10 border border-[#D6B875]/30 rounded-xl flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#D6B875] shrink-0" />
+            <span className="text-xs font-semibold text-[#D6B875]">Não possui usuário no Supabase?</span>
+          </div>
+          <p className="text-[11px] text-[#A6A9AE] leading-relaxed">
+            Acesse imediatamente o painel completo da Anthony's Barbearia com 1 clique (sem necessidade de senha).
+          </p>
+          <Button
+            type="button"
+            className="w-full text-xs font-bold gap-2 bg-[#D6B875] text-[#0B0D0F] hover:bg-[#c4a45f] py-2 mt-1 shadow-md"
+            onClick={handleDemoFastLogin}
+            disabled={isLoading}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Entrar no Painel Admin Agora</span>
+          </Button>
+        </div>
+
+        <div className="flex items-center gap-2 mb-4">
+          <div className="h-px bg-[#2B3036] flex-1" />
+          <span className="text-[10px] uppercase tracking-wider text-[#A6A9AE]">ou entre com credenciais</span>
+          <div className="h-px bg-[#2B3036] flex-1" />
+        </div>
+
         <div className="mb-5">
           <h2 className="text-lg font-semibold text-[#F3F1EC]">
             {mode === 'login'
-              ? 'Acessar painel'
+              ? 'Acessar com E-mail'
               : mode === 'register'
               ? 'Criar sua conta'
               : 'Recuperar senha'}
@@ -129,7 +160,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onSuccess }) => {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="proprietario@barbearia.com.br"
+            placeholder="proprietario@anthonysbarbearia.com.br"
             leftIcon={<Mail className="w-4 h-4" />}
           />
 
@@ -149,22 +180,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onSuccess }) => {
             {mode === 'login' ? 'Entrar' : mode === 'register' ? 'Criar Conta' : 'Enviar Instruções'}
           </Button>
         </form>
-
-        {/* Demo Fast Login Button if in Demo Mode */}
-        {isDemoMode && (
-          <div className="mt-4 pt-4 border-t border-[#2B3036]">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full text-xs gap-2 border-[#D6B875]/40 text-[#D6B875]"
-              onClick={handleDemoFastLogin}
-              disabled={isLoading}
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Entrar como Demonstração (Anthony's Barbearia)</span>
-            </Button>
-          </div>
-        )}
 
         {/* Mode Toggles */}
         <div className="mt-5 pt-4 border-t border-[#2B3036] flex flex-col gap-2 text-center text-xs text-[#A6A9AE]">

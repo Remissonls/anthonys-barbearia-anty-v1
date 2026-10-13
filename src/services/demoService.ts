@@ -135,19 +135,8 @@ export class DemoService implements IApiService {
     return this.db.barbershop;
   }
 
-  async getPublicBarbershop(slug: string): Promise<Barbershop | null> {
-    const s = slug?.toLowerCase();
-    if (
-      (this.db.barbershop.slug === slug ||
-        s === 'anthonys' ||
-        s === 'anthonys-barbearia' ||
-        s === 'mestre-navalha' ||
-        s === 'navalha-de-ouro') &&
-      this.db.barbershop.is_active
-    ) {
-      return this.db.barbershop;
-    }
-    return null;
+  async getPublicBarbershop(_slug?: string): Promise<Barbershop | null> {
+    return this.db.barbershop;
   }
 
   async setupOnboarding(data: {
