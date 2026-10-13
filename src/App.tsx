@@ -73,13 +73,16 @@ export function App() {
   };
 
   // ----------------------------------------------------
-  // ROUTE 1: PUBLIC BOOKING PAGE (/agendar/:slug)
+  // ROUTE 1: PUBLIC BOOKING PAGE (Default on root `/` and `/agendar/:slug`)
   // ----------------------------------------------------
-  if (currentPath.startsWith('/agendar/')) {
-    const slug = currentPath.replace('/agendar/', '').split('/')[0] || 'anthonys-barbearia';
+  const isAdminRoute = currentPath.startsWith('/app') || currentPath.startsWith('/admin');
+  if (!isAdminRoute) {
+    const slug = currentPath.startsWith('/agendar/')
+      ? currentPath.replace('/agendar/', '').split('/')[0] || 'anthonys-barbearia'
+      : 'anthonys-barbearia';
     return (
       <div className="relative min-h-screen bg-[#0B0D0F]">
-        {/* Floating switch back to admin for demo convenience */}
+        {/* Floating switch to admin panel */}
         <div className="fixed bottom-4 right-4 z-40">
           <button
             onClick={() => navigateTo('/app')}
