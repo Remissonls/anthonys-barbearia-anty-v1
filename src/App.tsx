@@ -80,12 +80,14 @@ export function App() {
     return (
       <div className="relative min-h-screen bg-[#0B0D0F]">
         {/* Floating switch back to admin for demo convenience */}
-        <div className="fixed top-3 right-3 z-50">
+        <div className="fixed bottom-4 right-4 z-40">
           <button
             onClick={() => navigateTo('/app')}
-            className="px-3 py-1.5 bg-[#1B1F24]/90 hover:bg-[#252B32] border border-[#2B3036] text-[#D6B875] text-xs font-semibold rounded-lg shadow-lg backdrop-blur-sm transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#14171B]/90 hover:bg-[#1C2026] border border-[#D6B875]/30 text-[#D6B875] text-[11px] font-semibold rounded-full shadow-2xl backdrop-blur-md transition-all active:scale-95"
+            title="Acessar Painel Administrativo"
           >
-            ← Painel Administrativo
+            <span>Painel Admin</span>
+            <span>→</span>
           </button>
         </div>
         <PublicBookingView slug={slug} />

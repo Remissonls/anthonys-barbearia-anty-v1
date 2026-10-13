@@ -74,3 +74,50 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #474E58;
 }
+
+/* Hide scrollbar utility for horizontal carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Glassmorphism & subtle ambient gold glow */
+.glass-header {
+  background: rgba(9, 10, 12, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.gold-glow {
+  box-shadow: 0 0 20px -3px rgba(214, 184, 117, 0.25);
+}
+
+.gold-glow-subtle {
+  box-shadow: 0 4px 20px -2px rgba(214, 184, 117, 0.12);
+}
+
+/* Springy tap feel for mobile buttons */
+.active-press {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.active-press:active {
+  transform: scale(0.97);
+}
+
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
